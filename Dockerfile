@@ -26,4 +26,4 @@ RUN npm install
 COPY . .
 
 # Botu çalıştır
-CMD ["node", "chess_bot.js"]
+CMD ["node", "index.js"]
