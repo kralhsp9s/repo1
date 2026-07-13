@@ -38,8 +38,8 @@ app.get('/analyze', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Sunucu ${PORT} portunda başarıyla ayağa kalktı.`);
 });        '--disable-dev-shm-usage' // Sunucu hafızasının yetersiz kalmasını önler
-    ]
-});
+    
+
 
     const page = await browser.newPage();
 
