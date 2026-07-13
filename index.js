@@ -1,5 +1,18 @@
 const puppeteer = require('puppeteer');
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 10000;
 
+// Render "Port açık mı?" diye kontrol ettiğinde bu cevap verecek
+app.get('/', (req, res) => {
+    res.send('Satranç botu arka planda aktif ve çalışıyor!');
+});
+
+app.listen(PORT, () => {
+    console.log(`Render için sahte port ${PORT} üzerinde dinleniyor...`);
+});
+
+// ... (Eren'in mevcut Puppeteer kodları buradan aşağıya aynen devam edecek)
 // Satranç hamlelerini analiz eden simüle edilmiş basit bir motor fonksiyonu
 // (Gerçek projelerde buraya Stockfish API'si veya motoru bağlanır)
 function enIyiHamleyiBul(tahtaDurumu) {
