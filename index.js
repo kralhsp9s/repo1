@@ -7,7 +7,10 @@ const PORT = process.env.PORT || 10000;
 app.get('/', (req, res) => {
     res.send('Satranç botu arka planda aktif ve çalışıyor!');
 });
-
+// Eren'in muhtemelen gözden kaçırdığı kod bloğu:
+app.get('/play', (req, res) => {
+    res.send('Satranç sistemi hazır! Hamle sırası sende Eren.');
+});
 app.listen(PORT, () => {
     console.log(`Render için sahte port ${PORT} üzerinde dinleniyor...`);
 });
