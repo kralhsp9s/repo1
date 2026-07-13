@@ -54,13 +54,14 @@ function enIyiHamleyiBul(tahtaDurumu) {
 // HATA DÜZELTME: Silinen 'async' fonksiyon başlangıcı ve tarayıcıyı başlatan 'puppeteer.launch' bloğu baştan yazıldı.
 async function satrançBotunuBaşlat() {
     const browser = await puppeteer.launch({
-        headless: true, // Render gibi sunucularda arayüz olmadığı için 'true' (arka planda) çalışmalı
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage' // Sunucu hafızasının yetersiz kalmasını önler (Havada kalan ayar buraya bağlandı)
-        ]
-    });
+    headless: true,
+    args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu'
+    ]
+});
 
     const page = await browser.newPage();
 
