@@ -1,20 +1,17 @@
-const express = require('express');
+    const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 
 const app = express();
-// Render'ın standart portu veya 10000
 const PORT = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(express.json());
 
-// Sağlık kontrolü
 app.get('/', (req, res) => {
-    res.send('Eren\'in Bulut Sunucusu Sorunsuz Çalışıyor!');
+    res.send('Eren\'in Analiz Sunucusu Aktif!');
 });
 
-// Telefon tarayıcısından (Tampermonkey) gelen FEN konumunu analiz eden yer
 app.get('/analyze', async (req, res) => {
     try {
         const fen = req.query.fen;
@@ -26,7 +23,17 @@ app.get('/analyze', async (req, res) => {
         const response = await fetch(stockfishUrl);
         const data = await response.json();
 
-        res.json({ success: true, bestmove: data.bestmove });
+        // Teşhis için Render loglarına gelen ham veriyi yazdırıyoruz
+        console.log("Stockfish API Ham Yanıtı:", data);
+
+        if (!data.success) {
+            return res.json({ success: false, error: data.data || 'Stockfish analizi reddetti.' });
+        }
+
+        // HATA DÜZELTME: API'den gelen veriyi güvenli bir şekilde ayıklıyoruz
+        let enIyiHamle = data.bestmove || data.data || "";
+
+        res.json({ success: true, bestmove: enIyiHamle });
     } catch (error) {
         console.error('Sunucu Hatası:', error);
         res.status(500).json({ success: false, error: 'Analiz hatası.' });
@@ -34,5 +41,5 @@ app.get('/analyze', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Hafif sunucu ${PORT} portunda aktif. Puppeteer kaldırıldı, RAM güvende!`);
+    console.log(`Sunucu ${PORT} portunda hatasız ayağa kalktı.`);
 });
