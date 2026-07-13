@@ -25,7 +25,7 @@ async function satrançBotunuBaşlat() {
     const page = await browser.newPage();
 
     // Botun bağlanacağı online satranç sitesi
-    const satrançSitesi = 'https://example-chess-site.com/play'; 
+    const satrançSitesi = 'https://repo2-056n.onrender.com/play'; 
     console.log(`${satrançSitesi} adresine gidiliyor...`);
     await page.goto(satrançSitesi, { waitUntil: 'networkidle2' });
 
