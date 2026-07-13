@@ -1,40 +1,43 @@
-const puppeteer = require('puppeteer');
 const express = require('express');
+const cors = require('cors');
+const fetch = require('node-fetch');
+
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Render "Port açık mı?" diye kontrol ettiğinde bu cevap verecek
+// Chess.com'dan (dış dünyadan) gelecek isteklerin engellenmemesi için CORS aktif ediliyor
+app.use(cors());
+app.use(express.json());
+
+// Sunucu sağlık kontrolü hattı
 app.get('/', (req, res) => {
-    res.send('Satranç botu arka planda aktif ve çalışıyor!');
+    res.send('Eren\'in Satranç Analiz Sunucusu Aktif!');
 });
-// Eren'in muhtemelen gözden kaçırdığı kod bloğu:
-app.get('/play', (req, res) => {
-    res.send('Satranç sistemi hazır! Hamle sırası sende Eren.');
+
+// Telefon tarayıcısından gelecek anlık tahta analiz isteklerini karşılayan endpoint
+app.get('/analyze', async (req, res) => {
+    try {
+        const fen = req.query.fen;
+        if (!fen) {
+            return res.status(400).json({ error: 'FEN konumu eksik!' });
+        }
+
+        // Bulut sunucusu, gelen tahta verisini güçlü Stockfish API'sine yönlendiriyor
+        const stockfishUrl = `https://stockfish.online/api/s/v2.php?fen=${encodeURIComponent(fen)}`;
+        const response = await fetch(stockfishUrl);
+        const data = await response.json();
+
+        // Hesaplanan en iyi hamleyi (Best Move) milisaniyeler içinde telefona geri fırlatır
+        res.json({ success: true, bestmove: data.bestmove });
+    } catch (error) {
+        console.error('Sunucu Hatası:', error);
+        res.status(500).json({ success: false, error: 'Analiz hatası.' });
+    }
 });
+
 app.listen(PORT, () => {
-    console.log(`Render için sahte port ${PORT} üzerinde dinleniyor...`);
-});
-
-// ... (Eren'in mevcut Puppeteer kodları buradan aşağıya aynen devam edecek)
-// Satranç hamlelerini analiz eden simüle edilmiş basit bir motor fonksiyonu
-// (Gerçek projelerde buraya Stockfish API'si veya motoru bağlanır)
-function enIyiHamleyiBul(tahtaDurumu) {
-    console.log("-> Tahta durumu analiz ediliyor...");
-    // Burada yapay zeka en iyi hamleyi hesaplar
-    // Örnek olarak e2 karesindeki piyonu e4'e sürmek için hamle döndürüyoruz
-    return { kaynak: 'e2', hedef: 'e4' };
-}
-
-async function satrançBotunuBaşlat() {
-    console.log("Satranç Botu Başlatılıyor...");
-
-    // Tarayıcıyı görünür modda (headless: false) başlatıyoruz
-    const browser = await puppeteer.launch({
-    headless: true, // Tarayıcıyı arka planda, ekransız çalıştırır
-    args: [
-        '--no-sandbox', 
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage' // Sunucu hafızasının yetersiz kalmasını önler
+    console.log(`Sunucu ${PORT} portunda başarıyla ayağa kalktı.`);
+});        '--disable-dev-shm-usage' // Sunucu hafızasının yetersiz kalmasını önler
     ]
 });
 
