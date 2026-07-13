@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const puppeteer = require('puppeteer'); // HATA DÜZELTME: Eksik olan Puppeteer kütüphanesi eklendi.
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -37,9 +38,29 @@ app.get('/analyze', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Sunucu ${PORT} portunda başarıyla ayağa kalktı.`);
-});        '--disable-dev-shm-usage' // Sunucu hafızasının yetersiz kalmasını önler
     
+    // Sunucu ayağa kalkınca satranç botunu otomatik olarak başlatıyoruz
+    satrançBotunuBaşlat();
+});    
 
+
+// HATA DÜZELTME: Kodda çağrılan ama tanımlanmayan hamle bulma fonksiyonu için taslak oluşturuldu.
+function enIyiHamleyiBul(tahtaDurumu) {
+    console.log("Mevcut tahta durumu analiz ediliyor...", tahtaDurumu);
+    // Eren buraya kendi algoritmasını bağlayabilir. Şimdilik hata vermemesi için örnek bir hamle dönüyor:
+    return { kaynak: 'e2', hedef: 'e4' }; 
+}
+
+// HATA DÜZELTME: Silinen 'async' fonksiyon başlangıcı ve tarayıcıyı başlatan 'puppeteer.launch' bloğu baştan yazıldı.
+async function satrançBotunuBaşlat() {
+    const browser = await puppeteer.launch({
+        headless: true, // Render gibi sunucularda arayüz olmadığı için 'true' (arka planda) çalışmalı
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage' // Sunucu hafızasının yetersiz kalmasını önler (Havada kalan ayar buraya bağlandı)
+        ]
+    });
 
     const page = await browser.newPage();
 
@@ -74,11 +95,14 @@ app.listen(PORT, () => {
 
             // Puppeteer, web sayfasındaki taşları bulup tıklayarak hamleyi yapar
             await page.click(`.square-${hamle.kaynak}`);
-            await page.waitForTimeout(500); // İnsansı bir gecikme ekliyoruz
+            
+            // HATA DÜZELTME: page.waitForTimeout yerine modern ve güncel asenkron bekleme yapısı eklendi
+            await new Promise(r => setTimeout(r, 500)); // İnsansı bir gecikme ekliyoruz
+            
             await page.click(`.square-${hamle.hedef}`);
 
             // Rakibin oynamasını beklemek için kısa bir duraklama
-            await page.waitForTimeout(3000);
+            await new Promise(r => setTimeout(r, 3000));
 
             // Oyunun bitip bitmediğini kontrol et
             const matKontrol = await page.$('.game-over-modal');
@@ -96,6 +120,3 @@ app.listen(PORT, () => {
     console.log("Bot görevini tamamladı. Tarayıcı kapatılıyor.");
     await browser.close();
 }
-
-// Botu çalıştır
-satrançBotunuBaşlat();
