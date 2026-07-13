@@ -1,0 +1,20 @@
+{
+  "name": "eren-satranc",
+  "version": "1.0.0",
+  "description": "Puppeteer ile çalışan akıllı satranç botu",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "puppeteer",
+    "chess",
+    "bot",
+    "render"
+  ],
+  "author": "Eren",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^22.0.0"
+  }
+}
